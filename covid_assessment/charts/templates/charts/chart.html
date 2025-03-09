@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COVID-19 Cases Graph</title>
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'charts/css/style.css' %}">
+    
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+    <h1>COVID-19 Cases Over Time</h1>
+    <div id="covid-chart"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var covidData = JSON.parse('{{ covid_data|escapejs }}');
+
+            var dates = covidData.map(item => item["Date"]);
+            var totalCases = covidData.map(item => parseInt(item["Total Confirmed Cases"].toString().replace(/ /g, '')));
+            var dailyCases = covidData.map(item => parseInt(item["Daily Confirmed Cases"].toString().replace(/ /g, '')));
+
+            Highcharts.chart('covid-chart', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'COVID-19 Cases Over Time'
+                },
+                xAxis: {
+                    categories: dates,
+                    title: { text: 'Date' },
+                    labels: { rotation: -45 }
+                },
+                yAxis: {
+                    title: { text: 'Number of Cases' }
+                },
+                series: [
+                    {
+                        name: 'Total Cases',
+                        data: totalCases,
+                        color: 'red'
+                    },
+                    {
+                        name: 'Daily Cases',
+                        data: dailyCases,
+                        color: 'blue'
+                    }
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
